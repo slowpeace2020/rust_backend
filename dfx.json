@@ -1,0 +1,43 @@
+{
+  "canisters": {
+    "rust_backend": {
+      "candid": "src/rust_backend/rust_backend.did",
+      "package": "rust_backend",
+      "type": "rust"
+    },
+    "user_profile": {
+      "candid": "src/user_profile/user_profile.did",
+      "package": "user_profile",
+      "type": "rust"
+    },
+    "contract": {
+      "candid": "src/contract/contract.did",
+      "package": "contract",
+      "type": "rust"
+    },
+    "publisher": {
+      "candid": "src/publisher/publisher.did",
+      "package": "publisher",
+      "type": "rust"
+    },
+    "subscriber": {
+      "candid": "src/subscriber/subscriber.did",
+      "package": "subscriber",
+      "type": "rust"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "dfx": "0.9.3",
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:8000",
+      "type": "ephemeral"
+    }
+  },
+  "version": 1
+}

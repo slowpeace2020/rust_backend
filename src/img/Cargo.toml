@@ -1,0 +1,37 @@
+[package]
+name = "img"
+version = "0.1.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+candid = "0.7.4"
+ic-cdk = "0.4"
+ic-cdk-macros = "0.4"
+lazy_static = "1.4.0"
+serde = "1.0.111"
+hex = "0.4.3"
+libsecp256k1 = "0.6.0"
+easy-hasher = "2.2.1"
+wasm-bindgen = "=0.2.61"
+image = { version = "0.23.8", default-features = false, features = ["jpeg", "png"] }
+base64 = "0.12.1"
+# 這個相依負責 Encode 或 Decode base64 編碼的資料
+[dependencies.base64]
+version="0.12.3"
+
+# 這個相依負責將 vec[u8] 等資料寫入文件中
+[dependencies.file]
+version="1.1.2"
+
+# 這個文件負責產生隨機字串用於檔案名稱
+[dependencies.rand]
+version = "0.7.3"
+
+# 用於檢查送上來的 Base64 image 的格式
+[dependencies.regex]
+version = "1"
