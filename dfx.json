@@ -14,16 +14,6 @@
       "candid": "src/contract/contract.did",
       "package": "contract",
       "type": "rust"
-    },
-    "publisher": {
-      "candid": "src/publisher/publisher.did",
-      "package": "publisher",
-      "type": "rust"
-    },
-    "subscriber": {
-      "candid": "src/subscriber/subscriber.did",
-      "package": "subscriber",
-      "type": "rust"
     }
   },
   "defaults": {

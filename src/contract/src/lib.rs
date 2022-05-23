@@ -46,7 +46,7 @@ fn paginate(posts: Vec<&Post>, page: usize) -> Vec<&Post> {
 
 #[query]
 fn message(filter_json: String) -> Vec<&'static Post> {
-
+    crate::println!("filter_json: {}",filter_json);
     let wall_posts = storage::get::<Contract>();
 
     let filter: Value = serde_json::from_str(&filter_json).unwrap();

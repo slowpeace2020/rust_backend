@@ -39,3 +39,25 @@ dfx --identity username call module_name method_name parameters
 
 #停止服务
 dfx stop
+
+##message json数据格式
+###条件查询
+"
+{
+            \"user_self_id\": \"2vxsx-fae\",
+            \"user_other_id\": \"Menlo Park, CA\"
+  }
+"
+
+"
+{
+            \"user_self_id\": \"2vxsx-fae\"
+              }
+"
+
+###查询全部数据
+"{}"
+
+##获取当前用户信息
+dfx canister call user_profile getOwnProfile
+

@@ -3,6 +3,4 @@ members = [
     "src/rust_backend",
     "src/user_profile",
     "src/contract",
-    "src/subscriber",
-    "src/publisher",
 ]
