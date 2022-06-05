@@ -16,5 +16,4 @@ service : {
   "setName": (name: text) -> (Profile);
   "setDescription": (description: text) -> (Profile);
   "linkAddress": (message: text, signature: text) -> (Profile);
-  "createUserProfile": (address: text, name: text,description: text) -> (Profile);
 }

@@ -144,7 +144,6 @@ pub fn get_image_blur(data: &[u8]) -> String {
 
 
 fn main() {
-    rocket::ignite().mount("/", routes![
-        upload_image
-    ]).launch();
+    let context = std::fs::read("nezha.jpg").unwrap();
+    println!("content: {:#?}",context)
 }

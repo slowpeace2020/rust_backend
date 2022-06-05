@@ -14,6 +14,10 @@
       "candid": "src/contract/contract.did",
       "package": "contract",
       "type": "rust"
+    },
+    "token": {
+      "main": "src/token/main.mo",
+      "type": "motoko"
     }
   },
   "defaults": {

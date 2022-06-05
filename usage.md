@@ -61,3 +61,8 @@ dfx stop
 ##获取当前用户信息
 dfx canister call user_profile getOwnProfile
 
+
+###todo
+motoko img接收
+motoko nft内容定义
+
