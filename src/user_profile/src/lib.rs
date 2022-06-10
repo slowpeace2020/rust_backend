@@ -11,9 +11,11 @@ use std::{collections::BTreeMap, convert::TryInto};
 use std::str::FromStr;
 
 type ProfileStore = BTreeMap<Principal, Profile>;
+type NameProfileStore = BTreeMap<String, Profile>;
+type ImgStore = BTreeMap<Principal, UploadedImage>;
 
 #[derive(Clone, Debug, CandidType, Deserialize)]
-struct Profile {
+pub struct Profile {
     pub address: String,
     pub name: String,
     pub description: String,

@@ -63,6 +63,15 @@ dfx canister call user_profile getOwnProfile
 
 
 ###todo
-motoko img接收
-motoko nft内容定义
+
+todo: 
+[rust img接收测试，前端传入]
+[transfer转账记录存储，现在的红包转账用户A/B账户名称记录，后续怎么关联principal-id进行转账]
+//motoko nft内容定义
+[模块之间相互调用，自定义数据不同模块共享的问题, rust和motoko混杂，数据类型怎么共享，
+user_profile = { path = "../user_profile" }]
+
+
+
+
 
