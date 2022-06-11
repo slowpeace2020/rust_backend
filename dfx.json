@@ -1,0 +1,36 @@
+{
+  "canisters": {
+    "rust_backend": {
+      "candid": "src/rust_backend/rust_backend.did",
+      "package": "rust_backend",
+      "type": "rust"
+    },
+    "rust_backend_assets": {
+      "dependencies": [
+        "rust_backend"
+      ],
+      "frontend": {
+        "entrypoint": "src/rust_backend_assets/src/index.html"
+      },
+      "source": [
+        "src/rust_backend_assets/assets",
+        "dist/rust_backend_assets/"
+      ],
+      "type": "assets"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "dfx": "0.9.3",
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:8000",
+      "type": "ephemeral"
+    }
+  },
+  "version": 1
+}
