@@ -61,6 +61,9 @@ dfx stop
 ##获取当前用户信息
 dfx canister call user_profile getOwnProfile
 
+##principalID通过用户名关联一个用户资料
+linkPrincipalID
+dfx canister call user_profile link_principal_id "username"
 
 ###todo
 
@@ -72,29 +75,6 @@ todo:
 user_profile = { path = "../user_profile" }]
 参考linkedup， 全部改成motoko, 每个用户有一个单独的profile, userid不绑定principal_id
 
-  public shared(msg) func redEnvelopeTransfer(ownerA: Text,ownerB: Text, amount: Nat) : async Text {
-     //if (amount%2!=0){
-      //    amount = amount - 1;
-     //}
-
-     if (amount<1){
-      return "amount less than 2, couldn't transfer it".
-     }
-
-     let saveToPublicAccount : Text = await transfer(owner,amount);
-
-     if(saveToPublicAccount=="Success"){
-        let newtransferRecord : TransferRecord = {
-                 itemOwnerA = ownerA;
-                 itemOwnerB = ownerB;
-                 amount = amount;
-           };
-
-           List.push(newtransferRecord,unTransferRecordList);
-     }
-
-     return saveToPublicAccount
-  }
 
 
 

@@ -11,9 +11,12 @@ use std::{collections::BTreeMap, convert::TryInto};
 use std::str::FromStr;
 
 type ProfileStore = BTreeMap<Principal, Profile>;
+type NameProfileStore = BTreeMap<String, Profile>;
+
 
 #[derive(Clone, Debug, CandidType, Deserialize)]
 pub struct Profile {
+    pub principal_id: Principal,
     pub address: String,
     pub name: String,
     pub description: String,
@@ -23,6 +26,7 @@ pub struct Profile {
 impl Default for Profile {
     fn default() -> Self {
         Profile {
+            principal_id: ic_cdk::caller(),
             address: String::from(""),
             name: String::from(""),
             description: String::from(""),
@@ -128,9 +132,21 @@ fn list() -> Vec<&'static Profile> {
     return profiles;
 }
 
-#[query(name = "createUserProfile")]
-fn create_new_user(address:String,name:String,description:String) -> Profile{
+#[update(name = "createUserProfile")]
+fn create_new_user(name:String,description:String,address:String) -> Profile{
+    let nameprofile_store = storage::get_mut::<NameProfileStore>();
+    println!("nameprofile_store: {:?}",nameprofile_store);
+    if nameprofile_store.contains_key(&name){
+        return Profile{
+            principal_id: Principal::from_str(&String::from("renrk-eyaaa")).unwrap(),
+            address,
+            name,
+            description: String::from("The name already exist, please try another name"),
+            img: String::from("")
+        };
+    }
     let profile = Profile{
+        principal_id: Principal::from_str(&String::from("renrk-eyaaa")).unwrap(),
         address,
         name,
         description,
@@ -139,25 +155,50 @@ fn create_new_user(address:String,name:String,description:String) -> Profile{
     // let cid2 = Principal::from_str(&text).unwrap();
     // let user = get_by_principal(cid2);
     // println!("user: {:?}",user);
-    let text = "jkies-sibbb-ap6";
+    // let text = "jkies-sibbb-ap6";
     // let cid2 = Principal::from_str(&text).unwrap();
     // let user = get_by_principal(cid2);
     // println!("user: {:?}",user);
 
-    let principal_id = Principal::from_str(&text).unwrap();
-    println!("principal_id: {}",principal_id);
-    let profile_store = storage::get_mut::<ProfileStore>();
-    profile_store.insert(principal_id, profile.clone());
+    // let principal_id = Principal::from_str(&text).unwrap();
+    // println!("principal_id: {}",principal_id);
+    // let profile_store = storage::get_mut::<ProfileStore>();
+    // profile_store.insert(principal_id, profile.clone());
+    //
+    // //save new user
+    // let mut profiles: Vec<(&Principal, &Profile)> = Vec::new();
+    // for (principal, profile) in profile_store.iter() {
+    //     profiles.push((principal, profile));
+    // }
+    //
+    // storage::stable_save((profiles,)).unwrap();
+    // println!("profile_store:{:?}",profile_store);
+    _save_name_profile(profile.clone());
+    profile
+}
 
-    //save new user
-    let mut profiles: Vec<(&Principal, &Profile)> = Vec::new();
-    for (principal, profile) in profile_store.iter() {
-        profiles.push((principal, profile));
+#[update(name = "linkPrincipalID")]
+fn link_principal_id(username: String) -> String {
+    let nameprofile_store = storage::get_mut::<NameProfileStore>();
+    let mut profileOption = nameprofile_store.get(&username);
+    match profileOption.as_mut() {
+        Some(profile) =>  {
+            if profile.principal_id.eq(&Principal::from_str("renrk-eyaaa").unwrap()){
+                let mut cur_profile = profile.clone();
+                cur_profile.principal_id =  ic_cdk::caller();
+                nameprofile_store.insert(username,cur_profile.clone());
+                return "success".to_string();
+            }
+
+
+        },
+        None => {
+            return "could not find the user profile".to_string();
+        },
     }
 
-    storage::stable_save((profiles,)).unwrap();
-    println!("profile_store:{:?}",profile_store);
-    profile
+    return "the user profile already linked to another user".to_string();
+
 }
 
 fn _save_profile(profile: Profile) -> () {
@@ -168,11 +209,32 @@ fn _save_profile(profile: Profile) -> () {
     profile_store.insert(principal_id, profile.clone());
 }
 
+fn _save_name_profile(profile: Profile) -> (){
+    let nameprofile_store = storage::get_mut::<NameProfileStore>();
+    nameprofile_store.insert(profile.clone().name,profile.clone());
+    println!("nameprofile_store: {:?}",nameprofile_store);
+}
+
 #[update(name = "setName")]
 fn set_name(handle: String) -> Profile {
     let mut profile = get_own_profile();
+    let nameprofile_store = storage::get_mut::<NameProfileStore>();
+    if nameprofile_store.contains_key(&handle){
+        return Profile{
+            principal_id: Principal::from_str(&String::from("renrk-eyaaa")).unwrap(),
+            address,
+            name,
+            description: String::from("The name already exist, please try another name"),
+            img: String::from("")
+        };
+    }
+
+    if profile.name !=""{
+        nameprofile_store.remove(&profile.clone().name);
+    }
     profile.name = handle;
     _save_profile(profile.clone());
+    _save_name_profile(profile.clone());
     return profile;
 }
 

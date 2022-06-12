@@ -11,7 +11,7 @@ actor Token {
   let symbol : Text = "CHUSHAN";
 
   private type TransferRecord = {
-        itemOwnerA: Text;
+        itemOwnerA: Principal;
         itemOwnerB: Text;
         amount: Nat;
   };
@@ -19,6 +19,8 @@ actor Token {
 
   private stable var balanceEntries : [(Principal, Nat)] = [];
   private var balances = HashMap.HashMap<Principal, Nat>(1, Principal.equal, Principal.hash);
+  private  var mapOfTransferOwners = HashMap.HashMap<Principal, List.List<TransferRecord>>(1, Principal.equal, Principal.hash);
+
   if (balances.size() < 1) {
     balances.put(owner, totalSupply);
   };
@@ -67,6 +69,38 @@ actor Token {
   };
 
 
+  public shared(msg) func redEnvelopeTransfer(ownerA: Principal,ownerB: Text, amount: Nat) : async Text {
+     //if (amount%2!=0){
+      //    amount = amount - 1;
+     //}
+
+     //if (amount<1){
+      //return "amount less than 2, couldn't transfer it".
+     //}
+
+     let saveToPublicAccount : Text = await transfer(owner,amount);
+
+     if(saveToPublicAccount=="Success"){
+        let newtransferRecord : TransferRecord = {
+                 itemOwnerA = ownerA;
+                 itemOwnerB = ownerB;
+                 amount = amount;
+           };
+
+
+          var ownedRecords : List.List<TransferRecord> = switch (mapOfTransferOwners.get(owner)) {
+                 case null List.nil<TransferRecord>();
+                 case (?result) result;
+           };
+
+          ownedRecords := List.push(newtransferRecord, ownedRecords);
+          mapOfTransferOwners.put(ownerA, ownedRecords);
+          return saveToPublicAccount;
+     }else{
+          return saveToPublicAccount;
+     }
+
+  };
 
   //todo account withdraw
 

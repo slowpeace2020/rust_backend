@@ -24,6 +24,7 @@ type ContractPreUpgrade = Vec<PostPreUpgrade>;
 struct Post {
     pub id: i128,
     pub timestamp: i128,
+    pub timesdelta: i128,
     pub user_self_id: String,
     pub user_other_id: String,
     pub text: String,
@@ -37,6 +38,15 @@ fn paginate(posts: Vec<&Post>, page: usize) -> Vec<&Post> {
     let mut paginated_posts = Vec::new();
     let mut n: usize = 0;
     while n < PAGESIZE && n <= start_index {
+        // let mut post = Post {
+        //     id: posts[start_index - n].id,
+        //     timestamp: posts[start_index - n].timestamp,
+        //     timesdelta: time() as i128 - posts[start_index - n].timestamp ,
+        //     user_self_id: posts[start_index - n].user_self_id,
+        //     user_other_id: posts[start_index - n].user_other_id,
+        //     text: posts[start_index - n].text,
+        // };
+        // posts[start_index - n].timesdelta = time() as i128 - posts[start_index - n].timestamp;
         paginated_posts.push(posts[start_index - n]);
         n += 1;
     }
@@ -99,6 +109,7 @@ fn write(text: String,other_principal_id: String)  {
     let post = Post {
         id: *latest_post_id,
         timestamp: time() as i128,
+        timesdelta: 0,
         user_self_id: principal_id,
         user_other_id: other_principal_id,
         text,
@@ -129,6 +140,7 @@ fn post_upgrade() {
                 wall.push(Post {
                     id: *latest_post_id,
                     timestamp: time() as i128,
+                    timesdelta: 0,
                     user_self_id: old_post.user_self.to_string(),
                     user_other_id: old_post.user_other.to_string(),
                     text: old_post.text
