@@ -3,6 +3,9 @@
 # Starts the replica, running in the background
 dfx start --background
 
+#清空canister
+dfx start --background --clean
+
 # Deploys your canisters to the replica and generates your candid interface
 dfx deploy
 
@@ -76,6 +79,11 @@ user_profile = { path = "../user_profile" }]
 参考linkedup， 全部改成motoko, 每个用户有一个单独的profile, userid不绑定principal_id
 
 
+ledger setup
+https://internetcomputer.org/docs/current/developer-docs/functionality/ledger/ledger-local-setup/
+
+deploy new token 
+https://internetcomputer.org/docs/current/developer-docs/functionality/ledger/deploy-new-token
 
 
-
+rust token 账户初始化问题， 命令行参数格式问题

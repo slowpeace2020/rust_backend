@@ -4,6 +4,9 @@ import Debug "mo:base/Debug";
 import Iter "mo:base/Iter";
 import List "mo:base/List";
 
+import UserProfile "canister:user_profile";
+
+
 actor Token {
 
   let owner : Principal = Principal.fromText("4p27i-ym6ti-34gws-3evnd-k6hdp-5iv6a-g7hzw-nc33q-lpyqi-elhkz-tae");
@@ -103,6 +106,10 @@ actor Token {
   };
 
   //todo account withdraw
+  public shared(msg) withDraw(owner:Text) : async Text{
+   let userInfo = UserProfile.getProfileByName(owner);
+   return "success";
+  }
 
   system func preupgrade() {
     balanceEntries := Iter.toArray(balances.entries());
