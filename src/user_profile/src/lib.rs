@@ -105,6 +105,19 @@ fn get_principal_by_eth(eth_address: String) -> Option<Principal> {
     None
 }
 
+#[query(name = "getPrincipalByName")]
+fn get_principal_by_name(name: String) -> Option<Principal> {
+    let nameprofile_store = storage::get_mut::<NameProfileStore>();
+    println!("nameprofile_store: {:?}",nameprofile_store);
+    for (username, profile) in nameprofile_store.iter() {
+        if username.eq(&name) {
+            return Some(profile.principal_id);
+        }
+    }
+
+    None
+}
+
 #[query]
 fn search(text: String) -> Option<&'static Profile> {
     let text = text.to_lowercase();
@@ -138,7 +151,7 @@ fn create_new_user(name:String,description:String,address:String) -> Profile{
     println!("nameprofile_store: {:?}",nameprofile_store);
     if nameprofile_store.contains_key(&name){
         return Profile{
-            principal_id: Principal::from_str(&String::from("renrk-eyaaa")).unwrap(),
+            principal_id: Principal::from_str(&String::from("renrk-eyaaa-aaaaa-aaada-cai")).unwrap(),
             address,
             name,
             description: String::from("The name already exist, please try another name"),
@@ -146,7 +159,7 @@ fn create_new_user(name:String,description:String,address:String) -> Profile{
         };
     }
     let profile = Profile{
-        principal_id: Principal::from_str(&String::from("renrk-eyaaa")).unwrap(),
+        principal_id: Principal::from_str(&String::from("renrk-eyaaa-aaaaa-aaada-cai")).unwrap(),
         address,
         name,
         description,
@@ -183,7 +196,7 @@ fn link_principal_id(username: String) -> String {
     let mut profileOption = nameprofile_store.get(&username);
     match profileOption.as_mut() {
         Some(profile) =>  {
-            if profile.principal_id.eq(&Principal::from_str("renrk-eyaaa").unwrap()){
+            if profile.principal_id.eq(&Principal::from_str("renrk-eyaaa-aaaaa-aaada-cai").unwrap()){
                 let mut cur_profile = profile.clone();
                 cur_profile.principal_id =  ic_cdk::caller();
                 nameprofile_store.insert(username,cur_profile.clone());
@@ -222,8 +235,8 @@ fn set_name(handle: String) -> Profile {
     if nameprofile_store.contains_key(&handle){
         return Profile{
             principal_id: Principal::from_str(&String::from("renrk-eyaaa")).unwrap(),
-            address,
-            name,
+            address: String::from(""),
+            name:handle,
             description: String::from("The name already exist, please try another name"),
             img: String::from("")
         };

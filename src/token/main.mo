@@ -1,5 +1,6 @@
 import Principal "mo:base/Principal";
 import HashMap "mo:base/HashMap";
+import Text "mo:base/Text";
 import Debug "mo:base/Debug";
 import Iter "mo:base/Iter";
 import List "mo:base/List";
@@ -13,16 +14,12 @@ actor Token {
   let totalSupply : Nat = 1000000000;
   let symbol : Text = "CHUSHAN";
 
-  private type TransferRecord = {
-        itemOwnerA: Principal;
-        itemOwnerB: Text;
-        amount: Nat;
-  };
-
 
   private stable var balanceEntries : [(Principal, Nat)] = [];
   private var balances = HashMap.HashMap<Principal, Nat>(1, Principal.equal, Principal.hash);
-  private  var mapOfTransferOwners = HashMap.HashMap<Principal, List.List<TransferRecord>>(1, Principal.equal, Principal.hash);
+
+  private var withdrawBalances = HashMap.HashMap<Principal, Nat>(1, Principal.equal, Principal.hash);
+  private var nameBalances = HashMap.HashMap<Text, Nat>(10, Text.equal, Text.hash);
 
   if (balances.size() < 1) {
     balances.put(owner, totalSupply);
@@ -71,45 +68,70 @@ actor Token {
     }
   };
 
+  //for red Envelope Transfer
+  public shared(msg) func redTransfer(from: Principal,to: Principal, amount: Nat) : async Text {
+      Debug.print("fromBalance: ");
+      Debug.print(debug_show(from));
+       Debug.print("msg.caller: ");
+       Debug.print(debug_show(msg.caller));
+       //if(from == msg.caller){
+        let fromBalance = await balanceOf(from);
+        if (fromBalance > amount) {
+          let newFromBalance : Nat = fromBalance - amount;
+          balances.put(from, newFromBalance);
+
+          let toBalance = await balanceOf(to);
+          let newToBalance = toBalance + amount;
+          balances.put(to, newToBalance);
+
+          return "Success";
+        } else {
+          return "Insufficient Funds"
+        }
+       //}else{
+        //return "identity does not match"
+       //}
+     };
+
 
   public shared(msg) func redEnvelopeTransfer(ownerA: Principal,ownerB: Text, amount: Nat) : async Text {
-     //if (amount%2!=0){
-      //    amount = amount - 1;
-     //}
-
-     //if (amount<1){
-      //return "amount less than 2, couldn't transfer it".
-     //}
-
-     let saveToPublicAccount : Text = await transfer(owner,amount);
+     Debug.print("who is sending redEnvelopeTransfer: ");
+     Debug.print(debug_show(msg.caller));
+     let saveToPublicAccount : Text = await redTransfer(msg.caller,owner,amount);
 
      if(saveToPublicAccount=="Success"){
-        let newtransferRecord : TransferRecord = {
-                 itemOwnerA = ownerA;
-                 itemOwnerB = ownerB;
-                 amount = amount;
+         var item : Nat = switch (withdrawBalances.get(ownerA)) {
+             case(null) 0;
+             case (?result) result;
            };
+          item +=amount/2;
+          withdrawBalances.put(ownerA,item);
 
-
-          var ownedRecords : List.List<TransferRecord> = switch (mapOfTransferOwners.get(owner)) {
-                 case null List.nil<TransferRecord>();
-                 case (?result) result;
+         var reminderB : Nat = switch (nameBalances.get(ownerB)) {
+             case(null) 0;
+             case (?result) result;
            };
-
-          ownedRecords := List.push(newtransferRecord, ownedRecords);
-          mapOfTransferOwners.put(ownerA, ownedRecords);
-          return saveToPublicAccount;
+           reminderB +=amount/2;
+           nameBalances.put(ownerB,reminderB);
+           return saveToPublicAccount;
      }else{
           return saveToPublicAccount;
      }
 
   };
 
-  //todo account withdraw
-  public shared(msg) withDraw(owner:Text) : async Text{
-   let userInfo = UserProfile.getProfileByName(owner);
-   return "success";
-  }
+    //todo account withdraw
+    public shared(msg) func withDraw(owner:Text, amount: Nat) : async Text {
+       //var userInfo : UserProfile.Profile = switch (UserProfile.getProfileByName(owner)){
+       //   case null return "the user does not exist";
+       //   case (?result) result
+       // };
+       var userInfo : ?Principal = await UserProfile.getPrincipalByName(owner);
+       //Debug.print("withDraw userInfo : ");
+       //Debug.print(debug_show(userInfo));
+       //Debug.print(userInfo);
+       return "success";
+    };
 
   system func preupgrade() {
     balanceEntries := Iter.toArray(balances.entries());

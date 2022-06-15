@@ -1,17 +1,5 @@
 {
   "canisters": {
-    "ledger": {
-      "type": "custom",
-      "wasm": "ledger.wasm",
-      "candid": "ledger.private.did"
-    },
-    "tokens_transfer": {
-      "build": [
-        "cargo build --target wasm32-unknown-unknown --package tokens_transfer --release"
-      ],
-      "candid": "src/tokens_transfer/tokens_transfer.did",
-      "type": "custom"
-    },
     "rust_backend": {
       "candid": "src/rust_backend/rust_backend.did",
       "package": "rust_backend",
@@ -29,6 +17,10 @@
     },
     "token": {
       "main": "src/token/main.mo",
+      "type": "motoko"
+    },
+    "token_primary": {
+      "main": "src/token_primary/main.mo",
       "type": "motoko"
     }
   },

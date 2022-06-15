@@ -1,7 +1,9 @@
 type Profile = record {
+    "principal_id": principal;
     "address": text;
     "name": text;
     "description": text;
+    "img": text;
 };
 
 service : {
@@ -17,4 +19,5 @@ service : {
   "setName": (name: text) -> (Profile);
   "setDescription": (description: text) -> (Profile);
   "linkPrincipalID": (username: text) -> (text);
+  "getPrincipalByName": (name: text) -> (opt principal) query;
 }

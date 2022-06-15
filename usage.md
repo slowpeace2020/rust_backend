@@ -39,6 +39,9 @@ dfx identity help
 ##以某个用户的身份调用接口方法
 dfx --identity username call module_name method_name parameters
 
+##给某个principal id的用户转账
+dfx canister call token transfer '(principal "4p27i-ym6ti-34gws-3evnd-k6hdp-5iv6a-g7hzw-nc33q-lpyqi-elhkz-tae",10000)'
+dfx canister call token transfer '(principal "2vxsx-fae",100000)'
 
 #停止服务
 dfx stop
@@ -87,3 +90,6 @@ https://internetcomputer.org/docs/current/developer-docs/functionality/ledger/de
 
 
 rust token 账户初始化问题， 命令行参数格式问题
+
+###todo
+token读取rust返回数据结构类型
