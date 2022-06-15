@@ -4,6 +4,7 @@ import Text "mo:base/Text";
 import Debug "mo:base/Debug";
 import Iter "mo:base/Iter";
 import List "mo:base/List";
+import Option "mo:base/Option";
 
 import UserProfile "canister:user_profile";
 
@@ -74,7 +75,6 @@ actor Token {
       Debug.print(debug_show(from));
        Debug.print("msg.caller: ");
        Debug.print(debug_show(msg.caller));
-       //if(from == msg.caller){
         let fromBalance = await balanceOf(from);
         if (fromBalance > amount) {
           let newFromBalance : Nat = fromBalance - amount;
@@ -88,9 +88,7 @@ actor Token {
         } else {
           return "Insufficient Funds"
         }
-       //}else{
-        //return "identity does not match"
-       //}
+
      };
 
 
@@ -121,16 +119,20 @@ actor Token {
   };
 
     //todo account withdraw
-    public shared(msg) func withDraw(owner:Text, amount: Nat) : async Text {
-       //var userInfo : UserProfile.Profile = switch (UserProfile.getProfileByName(owner)){
-       //   case null return "the user does not exist";
-       //   case (?result) result
-       // };
-       var userInfo : ?Principal = await UserProfile.getPrincipalByName(owner);
-       //Debug.print("withDraw userInfo : ");
-       //Debug.print(debug_show(userInfo));
-       //Debug.print(userInfo);
-       return "success";
+    public shared(msg) func withDraw(ownerName:Text, amount: Nat) : async Text {
+
+       var userInfo : ?Principal = await UserProfile.getPrincipalByName(ownerName);
+       var ownerPrincipalId : Principal = switch (userInfo){
+            case (null) owner;
+            case (?userInfo) userInfo
+         };
+
+        if (ownerPrincipalId==owner){
+           return "the user does not exist";
+        };
+
+       let saveToPublicAccount : Text = await redTransfer(owner,ownerPrincipalId,amount);
+       return saveToPublicAccount;
     };
 
   system func preupgrade() {
