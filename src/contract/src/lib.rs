@@ -103,23 +103,23 @@ fn get_invite_code() -> String{
 }
 
 #[update(name = "linkByInvitationCode")]
-fn link_by_invitation_code(invitationCode:String) -> Option<&'static Principal> {
+fn link_by_invitation_code(invitation_code:String) -> Option<&'static Principal> {
     let invitation_store = storage::get_mut::<InvitationMap>();
     let invitation_post_store = storage::get_mut::<InvitationPost>();
 
     //replace user B's principal_id into post
-    if invitation_store.contains_key(&invitationCode){
-        let mut post = invitation_post_store.get(&invitationCode).unwrap().clone();
+    if invitation_store.contains_key(&invitation_code){
+        let mut post = invitation_post_store.get(&invitation_code).unwrap().clone();
         let principalId = ic_cdk::caller();
         post.user_other_id = principalId.to_string();
         let wall = storage::get_mut::<Contract>();
         wall.push(post);
 
-        let mut userA = invitation_store.clone().get(&invitationCode);
-        match userA.as_mut() {
+        let mut user_a = invitation_store.get(&invitation_code);
+        match user_a.as_mut() {
             Some(principal) =>  {
-                invitation_store.remove(&*invitationCode);
-                invitation_post_store.remove(&*invitationCode);
+                _remove_code(invitation_code.clone());
+                //todo return principal
                 return Some(principal);
             },
             None => {
@@ -130,6 +130,13 @@ fn link_by_invitation_code(invitationCode:String) -> Option<&'static Principal> 
     }
 
     None
+}
+
+fn _remove_code(invitation_code:String){
+    let invitation_store = storage::get_mut::<InvitationMap>();
+    let invitation_post_store = storage::get_mut::<InvitationPost>();
+    invitation_store.remove(&invitation_code);
+    invitation_post_store.remove(&invitation_code);
 }
 
 fn paginate(posts: Vec<&Post>, page: usize) -> Vec<&Post> {
