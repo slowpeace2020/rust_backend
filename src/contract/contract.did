@@ -9,4 +9,5 @@ type Post = record {
 service : {
   "message": (filter: text) -> (vec Post) query;
   "write": (post: text,user_other_id: text) -> ();
+  "getInvitationCode": (principalId: principal) -> (text);
 }

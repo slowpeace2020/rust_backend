@@ -1,13 +1,21 @@
+
+use rand::{thread_rng, Rng};
+use rand::distributions::Alphanumeric;
+use std::str;
 use std::ops::Add;
 
-use ic_cdk::export::{
-    candid::{CandidType, Deserialize},
-    Principal,
+use ic_cdk::{
+    export::{
+        candid::{CandidType, Deserialize},
+        Principal,
+    },
 };
 use ic_cdk::*;
 use ic_cdk_macros::*;
 use ic_cdk::api::time;
 use serde_json::{Value};
+use std::collections::BTreeMap;
+use std::borrow::Borrow;
 
 
 const PAGESIZE: usize = 25;
@@ -32,6 +40,97 @@ struct Post {
 type Contract = Vec<Post>;
 
 type LatestPostId = i128;
+
+type InvitationMap = BTreeMap<String, Principal>;
+type InvitationPost = BTreeMap<String, Post>;
+
+#[update(name = "getInvitationCode")]
+fn get_invitation_code(text: String) -> String {
+    let principalId = ic_cdk::caller();
+
+    let mut s = get_invite_code();
+
+    let invitation_store = storage::get_mut::<InvitationMap>();
+    let invitation_post_store = storage::get_mut::<InvitationPost>();
+
+    invitation_store.insert(s.parse().unwrap(), principalId.clone());
+
+    // contract content
+    let latest_post_id = storage::get_mut::<LatestPostId>();
+    *latest_post_id = latest_post_id.add(1);
+
+    let post = Post {
+        id: *latest_post_id,
+        timestamp: time() as i128,
+        timesdelta: 0,
+        user_self_id: principalId.to_string(),
+        user_other_id: String::from(s.clone()),
+        text,
+    };
+
+    invitation_post_store.insert(s.clone().parse().unwrap(),post);
+    return String::from(&s)
+}
+
+fn get_invite_code() -> String{
+    let mut rand_string:Vec<u8> = thread_rng()
+        .sample_iter(&Alphanumeric)
+        .take(6)
+        .collect();
+
+    let mut s = match str::from_utf8(&rand_string) {
+        Ok(v) => v,
+        Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
+    };
+
+    let invitation_store = storage::get_mut::<InvitationMap>();
+
+    let mut ans = String::from(s);
+    // if let Some(principal_id) = invitation_store.borrow().get(&id) {
+    //     ans = get_invite_code();
+    // }
+
+    let mut principalOption = invitation_store.get(s);
+    match principalOption.as_mut() {
+        Some(principal) =>  {
+            return get_invite_code();
+        },
+        None => {
+            return ans;
+        },
+    }
+
+}
+
+#[update(name = "linkByInvitationCode")]
+fn link_by_invitation_code(invitationCode:String) -> Option<&'static Principal> {
+    let invitation_store = storage::get_mut::<InvitationMap>();
+    let invitation_post_store = storage::get_mut::<InvitationPost>();
+
+    //replace user B's principal_id into post
+    if invitation_store.contains_key(&invitationCode){
+        let mut post = invitation_post_store.get(&invitationCode).unwrap().clone();
+        let principalId = ic_cdk::caller();
+        post.user_other_id = principalId.to_string();
+        let wall = storage::get_mut::<Contract>();
+        wall.push(post);
+
+        let mut userA = invitation_store.clone().get(&invitationCode);
+        match userA.as_mut() {
+            Some(principal) =>  {
+                invitation_store.remove(&*invitationCode);
+                invitation_post_store.remove(&*invitationCode);
+                return Some(principal);
+            },
+            None => {
+                return None;
+            },
+        }
+
+    }
+
+    None
+}
 
 fn paginate(posts: Vec<&Post>, page: usize) -> Vec<&Post> {
     let start_index = posts.len() - ((page - 1) * PAGESIZE) - 1;
