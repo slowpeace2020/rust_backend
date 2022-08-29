@@ -15,7 +15,6 @@ use ic_cdk_macros::*;
 use ic_cdk::api::time;
 use serde_json::{Value};
 use std::collections::BTreeMap;
-use std::borrow::Borrow;
 
 
 const PAGESIZE: usize = 25;
@@ -41,19 +40,16 @@ type Contract = Vec<Post>;
 
 type LatestPostId = i128;
 
-type InvitationMap = BTreeMap<String, Principal>;
 type InvitationPost = BTreeMap<String, Post>;
 
 #[update(name = "getInvitationCode")]
 fn get_invitation_code(text: String) -> String {
-    let principalId = ic_cdk::caller();
+    let principal_id = ic_cdk::caller();
 
-    let mut s = get_invite_code();
+    let s = get_invite_code();
 
-    let invitation_store = storage::get_mut::<InvitationMap>();
     let invitation_post_store = storage::get_mut::<InvitationPost>();
 
-    invitation_store.insert(s.parse().unwrap(), principalId.clone());
 
     // contract content
     let latest_post_id = storage::get_mut::<LatestPostId>();
@@ -63,7 +59,7 @@ fn get_invitation_code(text: String) -> String {
         id: *latest_post_id,
         timestamp: time() as i128,
         timesdelta: 0,
-        user_self_id: principalId.to_string(),
+        user_self_id: principal_id.to_string(),
         user_other_id: String::from(s.clone()),
         text,
     };
@@ -73,26 +69,21 @@ fn get_invitation_code(text: String) -> String {
 }
 
 fn get_invite_code() -> String{
-    let mut rand_string:Vec<u8> = thread_rng()
+    let mut rand_string:Vec<char> = thread_rng()
         .sample_iter(&Alphanumeric)
         .take(6)
         .collect();
 
-    let mut s = match str::from_utf8(&rand_string) {
-        Ok(v) => v,
-        Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
-    };
+    let s: String = rand_string.iter().collect();
 
-    let invitation_store = storage::get_mut::<InvitationMap>();
+    let invitation_store = storage::get_mut::<InvitationPost>();
 
-    let mut ans = String::from(s);
-    // if let Some(principal_id) = invitation_store.borrow().get(&id) {
-    //     ans = get_invite_code();
-    // }
+    let ans = String::from(s);
 
-    let mut principalOption = invitation_store.get(s);
-    match principalOption.as_mut() {
-        Some(principal) =>  {
+
+    let mut post = invitation_store.get(&*ans.clone());
+    match post.as_mut() {
+        Some(_post) =>  {
             return get_invite_code();
         },
         None => {
@@ -103,25 +94,24 @@ fn get_invite_code() -> String{
 }
 
 #[update(name = "linkByInvitationCode")]
-fn link_by_invitation_code(invitation_code:String) -> Option<&'static Principal> {
-    let invitation_store = storage::get_mut::<InvitationMap>();
+fn link_by_invitation_code(invitation_code:String) -> Option<&'static Post> {
     let invitation_post_store = storage::get_mut::<InvitationPost>();
 
     //replace user B's principal_id into post
-    if invitation_store.contains_key(&invitation_code){
+    if invitation_post_store.contains_key(&invitation_code){
         let mut post = invitation_post_store.get(&invitation_code).unwrap().clone();
-        let principalId = ic_cdk::caller();
-        post.user_other_id = principalId.to_string();
+        let principal_id = ic_cdk::caller();
+        post.user_other_id = principal_id.to_string();
         let wall = storage::get_mut::<Contract>();
         wall.push(post);
 
-        let mut user_a = invitation_store.get(&invitation_code);
-        match user_a.as_mut() {
-            Some(principal) =>  {
+        let mut post_contract = invitation_post_store.get(&invitation_code);
+        match post_contract.as_mut() {
+            Some(contract) =>  {
                 _remove_code(invitation_code.clone());
                 //todo return principal
-                return Some(principal);
-            },
+                return Some(contract);
+            }
             None => {
                 return None;
             },
@@ -133,9 +123,7 @@ fn link_by_invitation_code(invitation_code:String) -> Option<&'static Principal>
 }
 
 fn _remove_code(invitation_code:String){
-    let invitation_store = storage::get_mut::<InvitationMap>();
     let invitation_post_store = storage::get_mut::<InvitationPost>();
-    invitation_store.remove(&invitation_code);
     invitation_post_store.remove(&invitation_code);
 }
 

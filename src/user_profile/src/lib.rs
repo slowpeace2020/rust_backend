@@ -193,8 +193,8 @@ fn create_new_user(name:String,description:String,address:String) -> Profile{
 #[update(name = "linkPrincipalID")]
 fn link_principal_id(username: String) -> String {
     let nameprofile_store = storage::get_mut::<NameProfileStore>();
-    let mut profileOption = nameprofile_store.get(&username);
-    match profileOption.as_mut() {
+    let mut profile_option = nameprofile_store.get(&username);
+    match profile_option.as_mut() {
         Some(profile) =>  {
             if profile.principal_id.eq(&Principal::from_str("renrk-eyaaa-aaaaa-aaada-cai").unwrap()){
                 let mut cur_profile = profile.clone();
