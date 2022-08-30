@@ -69,7 +69,7 @@ fn get_invitation_code(text: String) -> String {
 }
 
 fn get_invite_code() -> String{
-    let mut rand_string:Vec<char> = thread_rng()
+    let rand_string:Vec<char> = thread_rng()
         .sample_iter(&Alphanumeric)
         .take(6)
         .collect();
