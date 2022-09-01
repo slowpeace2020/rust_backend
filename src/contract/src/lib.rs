@@ -80,10 +80,10 @@ fn get_invite_code_hash() -> String{
     let mut hasher = DefaultHasher::new();
     s.hash(&mut hasher);
     let h = hasher.finish()%(time() as u64);
-    return base_n(h,87);
+    return base_n(h,64);
 }
 
-/// 10 进制转为 11 - 62 进制 36 进制前是小写
+/// 10 进制转为 11 - 64 进制 36 进制前是小写
 fn base_n(num: u64, n: i32) -> String {
     let num_rep: HashMap<i32, char> = HashMap::from([
         (10, 'a'), (11, 'b'), (12, 'c'), (13, 'd'), (14, 'e'),
@@ -97,13 +97,7 @@ fn base_n(num: u64, n: i32) -> String {
         (46, 'K'), (47, 'L'), (48, 'M'), (49, 'N'), (50, 'O'),
         (51, 'P'), (52, 'Q'), (53, 'R'), (54, 'S'), (55, 'T'),
         (56, 'U'), (57, 'V'), (58, 'W'), (59, 'X'), (60, 'Y'),
-        (61, 'Z'),
-        (62, 'z'), (63, 'Z'), (64, 'z'), (65, 'D'), (66, 'E'),
-        (67, 'F'), (68, 'G'), (69, 'H'), (70, 'I'), (71, 'J'),
-        (72, 'K'), (73, 'L'), (74, 'M'), (75, 'N'), (76, 'O'),
-        (77, 'P'), (78, 'Q'), (79, 'R'), (80, 'S'), (81, 'T'),
-        (82, 'U'), (83, 'V'), (84, 'W'), (85, 'X'), (86, 'Y'),
-        (87, 'Z')
+        (61, 'Z'), (62, '@'), (63, '*'),
     ]);
 
     let mut new_num_string = String::from("");
@@ -113,7 +107,7 @@ fn base_n(num: u64, n: i32) -> String {
         let remainder = (current % (n as u64)) as i32;
         let mut remainder_string: String;
 
-        if remainder > 9 && remainder < 62 {
+        if remainder > 9 && remainder < 64 {
             remainder_string = format!("{}", num_rep.get(&remainder).unwrap());
         } else {
             remainder_string = format!("{}", remainder);
