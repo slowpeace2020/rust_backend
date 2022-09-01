@@ -1,4 +1,5 @@
 extern crate file;
+extern crate image_base64;
 
 use ic_cdk::export::Principal;
 use base64::{encode, decode};
@@ -9,17 +10,10 @@ use regex::Regex;
 type ImgStore = BTreeMap<i128, String>;
 type ImgId = i128;
 
-
-// #[derive(Debug, Serialize, Deserialize)]
-// pub struct UploadedImage {
-//     // 用於儲存 base64 編碼的檔案
-//     data: String,
-//     url: String
-// }
-
-#[post("/images")]
+// https://floatflower.me/programming/rust/rocket.rs/glimpse/upload-image-with-base64/
+#[post("/images", format = "json", data="<image>")]
 #[update("uploadImg")]
-fn upload_image(image: String) -> String {
+fn upload_image(image: String) -> i128 {
     // 檢查格式
     let re = Regex::new(r"^data:image/jpeg;base64,[a-zA-Z0-9+/=]+$").unwrap();
 
@@ -36,6 +30,6 @@ fn upload_image(image: String) -> String {
 
 
     let img_store = storage::get_mut::<ImgStore>();
-    img_store.insert(latest_img_id, image);
-    return String::from("Upload successful");
+    img_store.insert(latest_img_id+10000, image);
+    return latest_img_id+10000;
 }

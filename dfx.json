@@ -1,10 +1,5 @@
 {
   "canisters": {
-    "rust_backend": {
-      "candid": "src/rust_backend/rust_backend.did",
-      "package": "rust_backend",
-      "type": "rust"
-    },
     "user_profile": {
       "candid": "src/user_profile/user_profile.did",
       "package": "user_profile",
@@ -14,14 +9,6 @@
       "candid": "src/contract/contract.did",
       "package": "contract",
       "type": "rust"
-    },
-    "token": {
-      "main": "src/token/main.mo",
-      "type": "motoko"
-    },
-    "token_primary": {
-      "main": "src/token_primary/main.mo",
-      "type": "motoko"
     }
   },
   "defaults": {

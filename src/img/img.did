@@ -1,5 +1,5 @@
 
 
 service : {
-  "uploadImg": (imgBase64: text) -> (text);
+  "uploadImg": (imgBase64: text) -> (nat);
 }
