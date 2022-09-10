@@ -79,8 +79,23 @@ fn get_invite_code_hash() -> String{
     let s: String = s1.clone();
     let mut hasher = DefaultHasher::new();
     s.hash(&mut hasher);
+    // let mut h = hasher.finish()%(time() as u64);
+    // h = h%((time()/1000000) as u64);
     let h = hasher.finish()%(time() as u64);
-    return base_n(h,64);
+
+    let code = base_n(h,64);
+
+    //check if the invitation code exists
+    let invitation_post_store = storage::get_mut::<InvitationPost>();
+    let mut post = invitation_post_store.get(&*code.clone());
+    match post.as_mut() {
+        Some(_post) =>  {
+            return get_invite_code_hash();
+        },
+        None => {
+            return code;
+        },
+    }
 }
 
 /// 10 进制转为 11 - 64 进制 36 进制前是小写
@@ -115,6 +130,12 @@ fn base_n(num: u64, n: i32) -> String {
 
         new_num_string = format!("{}{}", remainder_string, new_num_string);
         current = current / (n as u64);
+    }
+
+    if new_num_string.len()>8 {
+        new_num_string = new_num_string.split_off(new_num_string.len()-8);
+    }else{
+        return get_invite_code_hash();
     }
 
     new_num_string
