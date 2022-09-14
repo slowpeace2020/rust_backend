@@ -18,6 +18,7 @@ use std::collections::BTreeMap;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 use std::collections::HashMap;
+use std::fmt;
 
 const PAGESIZE: usize = 25;
 
@@ -167,7 +168,7 @@ fn get_invite_code() -> String{
 }
 
 #[update(name = "linkByInvitationCode")]
-fn link_by_invitation_code(invitation_code:String) -> Option<&'static Post> {
+fn link_by_invitation_code(invitation_code:String) -> String {
     let invitation_post_store = storage::get_mut::<InvitationPost>();
 
     //replace user B's principal_id into post
@@ -187,16 +188,15 @@ fn link_by_invitation_code(invitation_code:String) -> Option<&'static Post> {
                 crate::println!("contract: {:?}",contract);
                 _remove_code(invitation_code.clone());
                 //todo return principal
-                return Some(contract);
+                return String::from("{\"info\":\"link by invitation code succeeded!\"}");
             }
             None => {
-                return None;
             },
         }
 
     }
 
-    None
+    return String::from("{\"error\":\"invalid invite code\"}");
 }
 
 fn _remove_code(invitation_code:String){
