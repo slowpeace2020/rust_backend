@@ -7,7 +7,6 @@ use std::ops::Add;
 use ic_cdk::{
     export::{
         candid::{CandidType, Deserialize},
-        Principal,
     },
 };
 use ic_cdk::*;
@@ -18,7 +17,7 @@ use std::collections::BTreeMap;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 use std::collections::HashMap;
-use std::fmt;
+use candid::Principal;
 
 const PAGESIZE: usize = 25;
 
@@ -39,6 +38,13 @@ struct Post {
     pub user_other_id: String,
     pub text: String,
 }
+
+#[derive(Debug, Clone, CandidType, Deserialize)]
+pub enum InviteError {
+    InvitationCodeNotFound,
+}
+
+
 type Contract = Vec<Post>;
 
 type LatestPostId = i128;
@@ -168,35 +174,35 @@ fn get_invite_code() -> String{
 }
 
 #[update(name = "linkByInvitationCode")]
-fn link_by_invitation_code(invitation_code:String) -> String {
-    let invitation_post_store = storage::get_mut::<InvitationPost>();
+fn link_by_invitation_code(invitation_code:String) -> Result<Post, InviteError> {
+        let invitation_post_store = storage::get_mut::<InvitationPost>();
+        //replace user B's principal_id into post
+        if invitation_post_store.contains_key(&invitation_code){
+            let mut post = invitation_post_store.get(&invitation_code).unwrap().clone();
+            let principal_id = ic_cdk::caller();
+            post.user_other_id = principal_id.to_string();
+            crate::println!("==================================");
+            crate::println!("post: {:?}",post);
+            crate::println!("==================================");
+            let wall = storage::get_mut::<Contract>();
+            wall.push(post);
 
-    //replace user B's principal_id into post
-    if invitation_post_store.contains_key(&invitation_code){
-        let mut post = invitation_post_store.get(&invitation_code).unwrap().clone();
-        let principal_id = ic_cdk::caller();
-        post.user_other_id = principal_id.to_string();
-        crate::println!("==================================");
-        crate::println!("post: {:?}",post);
-        crate::println!("==================================");
-        let wall = storage::get_mut::<Contract>();
-        wall.push(post);
-
-        let mut post_contract = invitation_post_store.get(&invitation_code);
-        match post_contract.as_mut() {
-            Some(contract) =>  {
-                crate::println!("contract: {:?}",contract);
-                _remove_code(invitation_code.clone());
-                //todo return principal
-                return String::from("{\"info\":\"link by invitation code succeeded!\"}");
+            let mut post_contract = invitation_post_store.get(&invitation_code);
+            match post_contract.as_mut() {
+                Some(contract) =>  {
+                    crate::println!("contract: {:?}",contract);
+                    _remove_code(invitation_code.clone());
+                    //todo return principal
+                    // return String::from("{\"info\":\"link by invitation code succeeded!\"}");
+                    return Ok(contract.clone());
+                }
+                None => {
+                },
             }
-            None => {
-            },
+
         }
 
-    }
-
-    return String::from("{\"error\":\"invalid invite code\"}");
+        Err(InviteError::InvitationCodeNotFound)
 }
 
 fn _remove_code(invitation_code:String){

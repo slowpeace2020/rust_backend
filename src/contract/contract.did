@@ -6,9 +6,18 @@ type Post = record {
     "text": text;
 };
 
+type LinkInvitationResult = variant {
+    Ok: Post;
+    Err: InviteError;
+};
+
+type InviteError = variant {
+    InvitationCodeNotFound;
+};
+
 service : {
   "message": (filter: text) -> (vec Post) query;
   "write": (post: text,user_other_id: text) -> ();
   "getInvitationCode": (post: text) -> (text);
-  "linkByInvitationCode": (invitation_code: text) -> (text);
+  "linkByInvitationCode": (invitation_code: text) -> (LinkInvitationResult);
 }
