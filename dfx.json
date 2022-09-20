@@ -5,11 +5,6 @@
       "package": "user_profile",
       "type": "rust"
     },
-    "contract": {
-      "candid": "src/contract/contract.did",
-      "package": "contract",
-      "type": "rust"
-    },
     "post_service": {
       "candid": "src/post_service/post_service.did",
       "package": "post_service",

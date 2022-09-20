@@ -1,5 +1,0 @@
-
-
-service : {
-  "uploadImg": (imgBase64: text) -> (nat);
-}

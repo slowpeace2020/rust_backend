@@ -1,7 +1,5 @@
 [workspace]
 members = [
-    "src/rust_backend",
     "src/user_profile",
-    "src/contract",
     "src/post_service",
 ]
