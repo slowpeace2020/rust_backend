@@ -9,6 +9,11 @@
       "candid": "src/contract/contract.did",
       "package": "contract",
       "type": "rust"
+    },
+    "post_service": {
+      "candid": "src/post_service/post_service.did",
+      "package": "post_service",
+      "type": "rust"
     }
   },
   "defaults": {
@@ -17,7 +22,6 @@
       "packtool": ""
     }
   },
-  "dfx": "0.9.3",
   "networks": {
     "local": {
       "bind": "127.0.0.1:8000",

@@ -18,9 +18,10 @@ use std::hash::{Hash, Hasher};
 use std::collections::HashMap;
 use std::{
     collections::BTreeMap,
+    cmp::Ordering,
+    str::FromStr,
 };
 use candid::Principal;
-
 
 const PAGESIZE: usize = 25;
 
@@ -33,7 +34,7 @@ struct PostPreUpgrade {
 type ContractPreUpgrade = Vec<PostPreUpgrade>;
 
 #[derive(Clone, Debug, CandidType, Deserialize)]
-pub struct Post {
+struct Post {
     pub id: i128,
     pub timestamp: i128,
     pub timesdelta: i128,
@@ -68,7 +69,7 @@ type Contract = Vec<Post>;
 
 type LatestPostId = i128;
 
-type InvitationPost = BTreeMap<String, LatestPostId>;
+type InvitationPost = BTreeMap<String, Post>;
 
 type PostsMap = BTreeMap<LatestPostId, Post>;
 
@@ -79,7 +80,6 @@ fn get_invitation_code(text: String) -> String {
     let s = get_invite_code_hash();
 
     let invitation_post_store = storage::get_mut::<InvitationPost>();
-    let posts_map_store = storage::get_mut::<PostsMap>();
 
 
     // contract content
@@ -95,8 +95,7 @@ fn get_invitation_code(text: String) -> String {
         text,
     };
     crate::println!("post: {:?}",post);
-    invitation_post_store.insert(s.clone().parse().unwrap(),*latest_post_id);
-    posts_map_store.insert(*latest_post_id, post);
+    invitation_post_store.insert(s.clone().parse().unwrap(),post);
     return String::from(&s)
 }
 
@@ -150,7 +149,7 @@ fn base_n(num: u64, n: i32) -> String {
 
     while current != 0 {
         let remainder = (current % (n as u64)) as i32;
-        let remainder_string: String;
+        let mut remainder_string: String;
 
         if remainder > 9 && remainder < 64 {
             remainder_string = format!("{}", num_rep.get(&remainder).unwrap());
@@ -199,24 +198,25 @@ fn get_invite_code() -> String{
 #[update(name = "linkByInvitationCode")]
 fn link_by_invitation_code(invitation_code:String) -> Result<Post, InviteError> {
         let invitation_post_store = storage::get_mut::<InvitationPost>();
-        let posts_map_store = storage::get_mut::<PostsMap>();
-
-    //replace user B's principal_id into post
+        //replace user B's principal_id into post
         if invitation_post_store.contains_key(&invitation_code){
-            let post_id = invitation_post_store.get(&invitation_code).unwrap().clone();
+            let mut post = invitation_post_store.get(&invitation_code).unwrap().clone();
+            let principal_id = ic_cdk::caller();
+            post.user_other_id = principal_id.to_string();
+            crate::println!("==================================");
+            crate::println!("post: {:?}",post);
+            crate::println!("==================================");
+            let wall = storage::get_mut::<Contract>();
+            wall.push(post);
 
-            let mut post_contract = posts_map_store.get(&post_id);
+            let mut post_contract = invitation_post_store.get(&invitation_code);
             match post_contract.as_mut() {
                 Some(contract) =>  {
                     crate::println!("contract: {:?}",contract);
                     _remove_code(invitation_code.clone());
-                    let mut post = posts_map_store.get(&post_id).unwrap().clone();
-                    let principal_id = ic_cdk::caller();
-                    post.user_other_id = principal_id.to_string();
-                    posts_map_store.insert(post_id, post);
                     //todo return principal
                     // return String::from("{\"info\":\"link by invitation code succeeded!\"}");
-                    return Ok(posts_map_store.get(&post_id).unwrap().clone());
+                    return Ok(contract.clone());
                 }
                 None => {
                 },
@@ -233,39 +233,47 @@ fn _remove_code(invitation_code:String){
 }
 
 // 分页查询 post 内容，没有 comment
-// pub fn posts_page_query(q: &PostPageQuery) -> PostPage {
-//
-//     let pages = posts_query(q);
-//
-//     PostPage {
-//         page_size: pages.page_size,
-//         page_num: pages.page_num,
-//         total_count: pages.total_count,
-//         data: pages.data.into_iter().map(|p| p.into()).collect()
-//     }
-// }
+pub fn posts(q: &PostPageQuery) -> PostPage {
+
+    let pages = posts_query(q);
+
+    PostPage {
+        page_size: pages.page_size,
+        page_num: pages.page_num,
+        total_count: pages.total_count,
+        data: pages.data.into_iter().map(|p| p.into()).collect()
+    }
+}
 
 // 分页查询 post and comment 内容
-// pub fn posts_query(q: PostPageQuery)-> PostPage {
-//
-//     let page_size= q.page_size;
-//     let page_num = q.page_num;
-//     let ps = storage::get_mut::<PostsMap>();
-//     let mut ps: Vec<Post> = ps
-//         .values()
-//         .filter(|p: && Post| (q.user_id==None||(p.user_self_id==q.user_id.unwrap())||(p.user_other_id==q.user_id.unwrap())) &&
-//             (q.text==None || p.text.contains(q.text.unwrap())))
-//         .cloned()
-//         .collect();
-//
-//     ps.sort_by(|p1:&Post, p2: &Post| p2.id.cmp(&p1.id));
-//
-//     let total_count = ps.len();
-//     let data = ps.iter().skip(page_num * page_size).take(page_size).cloned().collect();
-//     PostPage { page_num, page_size, total_count, data }
-// }
+pub fn posts_query(q: &PostPageQuery)-> PostPage {
+
+    let page_size= q.page_size;
+    let page_num = q.page_num;
+    let filter = |p: && Post| (q.user_id.is_empty()||(p.user_self_id==q.user_id)||(p.user_other_id==q.user_id)) &&
+        (q.querystring.is_empty() || p.text.contains(&q.querystring));
+    let ps = storage::get_mut::<PostsMap>();
+
+    let compare = |p1:&PostPage, p2: &PostPage| p2.created_at.cmp(&p1.created_at);
+    paging(ps, page_size, page_num, filter, compare)
+}
 
 
+fn paging(ps: &BTreeMap<i128, Post>, page_size: usize, page_num: usize,
+          ff: impl Fn(&&Post) -> bool, compare: impl Fn(&Post, &Post) -> Ordering)
+          -> PostPage {
+    let mut ps: Vec<Post> = ps
+        .values()
+        .filter(ff)
+        .cloned()
+        .collect();
+
+    ps.sort_by(compare);
+
+    let total_count = ps.len();
+    let data = ps.iter().skip(page_num * page_size).take(page_size).cloned().collect();
+    PostPage { page_num, page_size, total_count, data }
+}
 
 fn paginate(posts: Vec<&Post>, page: usize) -> Vec<&Post> {
     let start_index = posts.len() - ((page - 1) * PAGESIZE) - 1;
@@ -336,7 +344,6 @@ fn message(filter_json: String) -> Vec<&'static Post> {
 
 #[update]
 fn write(text: String,other_principal_id: String)  {
-    let posts_map_store = storage::get_mut::<PostsMap>();
     let principal_id = ic_cdk::caller().to_string();
     let latest_post_id = storage::get_mut::<LatestPostId>();
     *latest_post_id = latest_post_id.add(1);
@@ -349,7 +356,9 @@ fn write(text: String,other_principal_id: String)  {
         user_other_id: other_principal_id,
         text,
     };
-    posts_map_store.insert(*latest_post_id,post);
+
+    let wall = storage::get_mut::<Contract>();
+    wall.push(post);
 }
 
 #[pre_upgrade]

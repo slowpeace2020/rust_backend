@@ -71,6 +71,25 @@ dfx canister call user_profile getOwnProfile
 linkPrincipalID
 dfx canister call user_profile link_principal_id "username"
 
+##dfx deploy 初始化参数
+dfx deploy --argument "(record{
+acounts=vec{
+record{owner=principal \"test1\";tokens=\"test2\"},
+record{owner=principal \"test1\";tokens=\"test2\"}
+};
+proposals=vec{};
+})"
+
+$ dfx canister --network=ic --no-wallet call aanaa-xaaaa-aaaah-aaeiq-cai wallet_create_canister "(record {user_other_id=\"testuser\"; text=\"gogogo\"; })"
+$ dfx canister call aanaa-xaaaa-aaaah-aaeiq-cai wallet_create_canister "(record {cycles= (AMOUNT:nat64); controller= (null); })"
+
+
+(
+  variant {
+    17_724 = record { 1_313_628_723 = principal "CREATED_CANISTER_ID" }
+  },
+)
+
 ###todo
 
 todo: 

@@ -39,6 +39,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "async-trait"
+version = "0.1.57"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "76464446b8bc32758d7e88ee1a804d9914cd9b1cb264c029899680b0be29826f"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "atty"
 version = "0.2.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -235,8 +246,8 @@ version = "0.1.0"
 dependencies = [
  "candid",
  "getrandom 0.2.7",
- "ic-cdk",
- "ic-cdk-macros",
+ "ic-cdk 0.4.0",
+ "ic-cdk-macros 0.4.0",
  "rand",
  "serde",
  "serde_json",
@@ -392,6 +403,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "90e5c1c8368803113bf0c9584fc495a58b86dc8a29edbf8fe877d21d9507e797"
 
 [[package]]
+name = "email_address"
+version = "0.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b1b32a7a2580c4473f10f66b512c34bdd7d33c5e3473227ca833abdb5afe4809"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "ena"
 version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -417,6 +437,95 @@ name = "fnv"
 version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3f9eec918d3f24069decb9af1554cad7c880e2da24a9afd88aca000531ab82c1"
+
+[[package]]
+name = "futures"
+version = "0.3.24"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7f21eda599937fba36daeb58a22e8f5cee2d14c4a17b5b7739c7c8e5e3b8230c"
+dependencies = [
+ "futures-channel",
+ "futures-core",
+ "futures-executor",
+ "futures-io",
+ "futures-sink",
+ "futures-task",
+ "futures-util",
+]
+
+[[package]]
+name = "futures-channel"
+version = "0.3.24"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "30bdd20c28fadd505d0fd6712cdfcb0d4b5648baf45faef7f852afb2399bb050"
+dependencies = [
+ "futures-core",
+ "futures-sink",
+]
+
+[[package]]
+name = "futures-core"
+version = "0.3.24"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4e5aa3de05362c3fb88de6531e6296e85cde7739cccad4b9dfeeb7f6ebce56bf"
+
+[[package]]
+name = "futures-executor"
+version = "0.3.24"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9ff63c23854bee61b6e9cd331d523909f238fc7636290b96826e9cfa5faa00ab"
+dependencies = [
+ "futures-core",
+ "futures-task",
+ "futures-util",
+]
+
+[[package]]
+name = "futures-io"
+version = "0.3.24"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bbf4d2a7a308fd4578637c0b17c7e1c7ba127b8f6ba00b29f717e9655d85eb68"
+
+[[package]]
+name = "futures-macro"
+version = "0.3.24"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "42cd15d1c7456c04dbdf7e88bcd69760d74f3a798d6444e16974b505b0e62f17"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "futures-sink"
+version = "0.3.24"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "21b20ba5a92e727ba30e72834706623d94ac93a725410b6a6b6fbc1b07f7ba56"
+
+[[package]]
+name = "futures-task"
+version = "0.3.24"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a6508c467c73851293f390476d4491cf4d227dbabcd4170f3bb6044959b294f1"
+
+[[package]]
+name = "futures-util"
+version = "0.3.24"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "44fb6cb1be61cc1d2e43b262516aafcf63b241cffdb1d3fa115f91d9c7b09c90"
+dependencies = [
+ "futures-channel",
+ "futures-core",
+ "futures-io",
+ "futures-macro",
+ "futures-sink",
+ "futures-task",
+ "memchr",
+ "pin-project-lite",
+ "pin-utils",
+ "slab",
+]
 
 [[package]]
 name = "generic-array"
@@ -515,17 +624,80 @@ dependencies = [
 ]
 
 [[package]]
+name = "ic-cdk"
+version = "0.5.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4ebabbd2e082472e93928ec9725a5aeec4572284e07bf399f3e1eb6a358a4ba6"
+dependencies = [
+ "candid",
+ "cfg-if",
+ "serde",
+]
+
+[[package]]
 name = "ic-cdk-macros"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a59a186745fd7d96ba2e057f3b3e3038578ae1e82dcb548bd96f48e9e4a39129"
 dependencies = [
  "candid",
- "ic-cdk",
+ "ic-cdk 0.4.0",
  "proc-macro2",
  "quote",
  "serde",
  "serde_tokenstream",
+ "syn",
+]
+
+[[package]]
+name = "ic-cdk-macros"
+version = "0.5.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d453dcbe269b19ebd9b3a377819c9f32b3c5c99c3dd42bfd6789600aa77b510c"
+dependencies = [
+ "candid",
+ "ic-cdk 0.5.6",
+ "proc-macro2",
+ "quote",
+ "serde",
+ "serde_tokenstream",
+ "syn",
+]
+
+[[package]]
+name = "ic-cron"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cf528e633e986b5c8bb89d447bbaf777da8882ead8620fff6cffd0ea3bc1397e"
+dependencies = [
+ "candid",
+ "ic-cdk 0.4.0",
+ "ic-cdk-macros 0.4.0",
+ "serde",
+]
+
+[[package]]
+name = "ic-event-hub"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1d25c3958ee2a8cbb34522354ba424e1bd528131b18c82332045d8acded001a6"
+dependencies = [
+ "async-trait",
+ "candid",
+ "futures",
+ "ic-cdk 0.4.0",
+ "leb128",
+ "serde",
+]
+
+[[package]]
+name = "ic-event-hub-macros"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9d7b461d56f9a1631e04cd3cf260122f33c5d8ab2e372971060234610663cb78"
+dependencies = [
+ "proc-macro2",
+ "quote",
  "syn",
 ]
 
@@ -577,6 +749,12 @@ checksum = "258451ab10b34f8af53416d1fdab72c22e805f0c92a1136d59470ec0b11138b2"
 dependencies = [
  "wasm-bindgen",
 ]
+
+[[package]]
+name = "json_pretty"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9c9fe3f290d2cb8660e3e051352ea55a404788d213a106a33ec8802447c4a762"
 
 [[package]]
 name = "keccak"
@@ -890,6 +1068,37 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "db8bcd96cb740d03149cbad5518db9fd87126a10ab519c011893b1754134c468"
 
 [[package]]
+name = "pin-project-lite"
+version = "0.2.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e0a7ae3ac2f1173085d398531c705756c94a4c56843785df85a60c1a0afac116"
+
+[[package]]
+name = "pin-utils"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
+
+[[package]]
+name = "post_service"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "candid",
+ "email_address",
+ "ic-cdk 0.5.6",
+ "ic-cdk-macros 0.5.6",
+ "ic-cron",
+ "ic-event-hub",
+ "ic-event-hub-macros",
+ "json_pretty",
+ "rstest",
+ "serde",
+ "serde_bytes",
+ "thiserror",
+]
+
+[[package]]
 name = "ppv-lite86"
 version = "0.2.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1019,12 +1228,34 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a3f87b73ce11b1619a3c6332f45341e0047173771e8b8b73f87bfeefb7b56244"
 
 [[package]]
+name = "rstest"
+version = "0.12.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d912f35156a3f99a66ee3e11ac2e0b3f34ac85a07e05263d05a7e2c8810d616f"
+dependencies = [
+ "cfg-if",
+ "proc-macro2",
+ "quote",
+ "rustc_version",
+ "syn",
+]
+
+[[package]]
 name = "rust_backend"
 version = "0.1.0"
 dependencies = [
  "candid",
- "ic-cdk",
- "ic-cdk-macros",
+ "ic-cdk 0.4.0",
+ "ic-cdk-macros 0.4.0",
+]
+
+[[package]]
+name = "rustc_version"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bfa0f585226d2e68097d4f95d113b15b83a82e819ab25717ec0590d9584ef366"
+dependencies = [
+ "semver",
 ]
 
 [[package]]
@@ -1044,6 +1275,12 @@ name = "scopeguard"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d29ab0c6d3fc0ee92fe66e2d99f700eab17a8d57d1c1d3b748380fb20baa78cd"
+
+[[package]]
+name = "semver"
+version = "1.0.14"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e25dfac463d778e353db5be2449d1cce89bd6fd23c9f1ea21310ce6e5a1b29c4"
 
 [[package]]
 name = "serde"
@@ -1165,6 +1402,15 @@ name = "siphasher"
 version = "0.3.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7bd3e3206899af3f8b12af284fafc038cc1dc2b41d1b89dd17297221c5d225de"
+
+[[package]]
+name = "slab"
+version = "0.4.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4614a76b2a8be0058caa9dbbaf66d988527d86d003c11a94fbd335d7661edcef"
+dependencies = [
+ "autocfg",
+]
 
 [[package]]
 name = "smallvec"
@@ -1297,8 +1543,8 @@ dependencies = [
  "candid",
  "easy-hasher",
  "hex",
- "ic-cdk",
- "ic-cdk-macros",
+ "ic-cdk 0.4.0",
+ "ic-cdk-macros 0.4.0",
  "lazy_static",
  "libsecp256k1",
  "serde",

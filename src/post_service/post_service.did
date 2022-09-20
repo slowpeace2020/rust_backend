@@ -1,0 +1,66 @@
+type Post = record {
+    "id": nat64;
+    "timestamp": nat64;
+    "user_self_id": text;
+    "user_other_id": text;
+    "text": text;
+    "is_invited": bool;
+};
+
+type PostCreateCommand = record {
+    "user_other_id": text;
+    "text": text;
+};
+
+type PostPageQuery = record {
+    page_num: nat64;
+    page_size: nat64;
+    user_id: text;
+    text: text;
+};
+
+type PostPage = record {
+   data: vec Post;
+   page_num: nat64;
+   page_size: nat64;
+   total_count: nat64
+};
+
+type PostPageResult = variant {
+    Ok: PostPage;
+    Err: PostError;
+};
+
+type LinkInvitationResult = variant {
+    Ok: Post;
+    Err: PostError;
+};
+
+type GetInvitationCodeResult = variant {
+    Ok: text;
+    Err: PostError;
+};
+
+type CreatePostResult = variant {
+    Ok: nat64;
+    Err: PostError;
+};
+
+type PostError = variant {
+    PostAlreadyExists;
+    PostNotFound;
+    PostAlreadyCompleted;
+    PostUnAuthorizedOperation;
+    PostCommentNotFound;
+    UserNotFound;
+    InviteFailError;
+    InviteCodeError;
+};
+
+service : {
+    "create_post" : (PostCreateCommand) -> (CreatePostResult);
+    "query_posts" : (PostPageQuery) -> (PostPageResult);
+    "getInvitationCode": (PostCreateCommand) -> (GetInvitationCodeResult);
+    "linkByInvitationCode": (invitation_code: text) -> (LinkInvitationResult);
+    "greet": (text) -> (text) query;
+}
