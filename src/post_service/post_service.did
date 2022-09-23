@@ -3,12 +3,14 @@ type Post = record {
     "timestamp": nat64;
     "user_self_id": text;
     "user_other_id": text;
+    "user_other_name": text;
     "text": text;
     "is_invited": bool;
 };
 
 type PostCreateCommand = record {
     "user_other_id": text;
+    "user_other_name": text;
     "text": text;
 };
 

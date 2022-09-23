@@ -13,17 +13,19 @@ pub struct Post {
     pub timestamp: u64,
     pub user_self_id: String,
     pub user_other_id: String,
+    pub user_other_name: String,
     pub text: String,
     pub is_invited: bool,
 }
 
 impl Post {
-    pub fn new(id: u64, timestamp: u64, user_self_id: String, user_other_id: String,text:String,is_invited:bool) -> Self {
+    pub fn new(id: u64, timestamp: u64, user_self_id: String, user_other_id: String,user_other_name:String,text:String,is_invited:bool) -> Self {
         Self {
             id,
             timestamp,
             user_self_id,
             user_other_id,
+            user_other_name,
             text,
             is_invited
         }
@@ -33,12 +35,13 @@ impl Post {
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct PostCreateCommand {
     pub user_other_id: String,
+    pub user_other_name: String,
     pub text: String,
 }
 
 impl PostCreateCommand {
-    pub fn build_profile(self, id: u64, timestamp: u64, user_self_id: String,is_invited:bool, user_other_id: String,text:String) -> Post {
-        Post::new(id, timestamp,user_self_id,user_other_id,text,is_invited)
+    pub fn build_profile(self, id: u64, timestamp: u64, user_self_id: String,is_invited:bool, user_other_id: String,user_other_name:String,text:String) -> Post {
+        Post::new(id, timestamp,user_self_id,user_other_id,user_other_name,text,is_invited)
     }
 
 }

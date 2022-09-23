@@ -19,6 +19,7 @@ fn create_post(cmd: PostCreateCommand) -> Result<u64, PostError> {
         let now = ctx.env.now();
         let is_invited = true;
         let user_other_id = cmd.user_other_id.clone();
+        let user_other_name = cmd.user_other_name.clone();
         let text = cmd.text.clone();
         let post = cmd.build_profile(
             id,
@@ -26,6 +27,7 @@ fn create_post(cmd: PostCreateCommand) -> Result<u64, PostError> {
             caller.to_string(),
             is_invited,
             user_other_id,
+            user_other_name,
             text
         );
         match ctx.post_service.create_post(post) {
@@ -48,6 +50,7 @@ fn get_invitte_code(cmd: PostCreateCommand) -> Result<String, PostError> {
         let now = ctx.env.now();
         let is_invited = false;
         let user_other_id = cmd.user_other_id.clone();
+        let user_other_name = cmd.user_other_name.clone();
         let text = cmd.text.clone();
 
         let post = cmd.build_profile(
@@ -56,6 +59,7 @@ fn get_invitte_code(cmd: PostCreateCommand) -> Result<String, PostError> {
             caller.to_string(),
             is_invited,
             user_other_id,
+            user_other_name,
             text
         );
         match ctx.post_service.get_invitation_code(post) {

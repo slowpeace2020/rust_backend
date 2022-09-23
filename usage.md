@@ -72,8 +72,8 @@ linkPrincipalID
 dfx canister call user_profile link_principal_id "username"
 
 ###dfx canister call api methods
-dfx canister call post_service getInvitationCode "(record {user_other_id=\"testuser\"; text=\"gogogo\" })"    
-dfx canister call post_service linkByInvitationCode "kkpVv3kc"
+dfx canister call post_service getInvitationCode "(record {user_other_id=\"\";user_other_name=\"testuser\"; text=\"gogogo\" })"    
+dfx canister call post_service linkByInvitationCode "OVCYiXC9"
 ####查询页码数量减一
 dfx canister call post_service query_posts "(record {page_num=0;page_size=10;user_id=\"\";text=\"\" })"
 
