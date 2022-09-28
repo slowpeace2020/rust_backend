@@ -76,12 +76,13 @@ impl PostService {
         }
     }
 
-   pub fn get_invitation_code(&mut self,post:Post) -> Option<String> {
+   pub fn get_invitation_code(&mut self, mut post:Post) -> Option<String> {
        let invitation_code = String::from(&self.get_invite_code_hash(post.id));
        let mut invitation_post_store = &self.invitations;
        if invitation_post_store.contains_key(&invitation_code){
            return self.get_invitation_code(post);
        }
+       post.user_other_id = invitation_code.clone();
 
        let post_id = post.id;
        match self.create_post(post.clone()){

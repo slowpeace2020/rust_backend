@@ -64,6 +64,7 @@ fn get_invitte_code(cmd: PostCreateCommand) -> Result<String, PostError> {
         );
         match ctx.post_service.get_invitation_code(post) {
             Some(code) => {
+                ctx.id += 1;    // id addOne
                 Ok(code)
             },
             None => Err(PostError::InviteFailError),
