@@ -23,7 +23,6 @@ fn create_post(cmd: PostCreateCommand) -> Result<u64, PostError> {
         let text = cmd.text.clone();
         let post = cmd.build_profile(
             id,
-            0,
             now,
             caller.to_string(),
             is_invited,
@@ -56,7 +55,6 @@ fn get_invitte_code(cmd: PostCreateCommand) -> Result<String, PostError> {
 
         let post = cmd.build_profile(
             id,
-            0,
             now,
             caller.to_string(),
             is_invited,
@@ -70,19 +68,6 @@ fn get_invitte_code(cmd: PostCreateCommand) -> Result<String, PostError> {
                 Ok(code)
             },
             None => Err(PostError::InviteFailError),
-        }
-    })
-}
-
-#[update(name = "updatePhoto")]
-fn update_photo(post_id:u64, photo_id:u64) -> Result<Post, PostError> {
-    CONTEXT.with(|c| {
-        let mut ctx = c.borrow_mut();
-        match ctx.post_service.update_post_photo(post_id,photo_id) {
-            Ok(post) => {
-                Ok(post)
-            },
-            e=>e,
         }
     })
 }

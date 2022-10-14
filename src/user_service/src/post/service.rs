@@ -117,26 +117,6 @@ impl PostService {
 
 
 
-  pub  fn update_post_photo(&mut self, post_id:u64, photo_id:u64) -> Result<Post, PostError> {
-      let mut posts_map_store = &self.posts.clone();
-      let mut post_contract = posts_map_store.get(&post_id);
-      match post_contract.as_mut() {
-          Some(_) =>  {
-              _remove_code(&mut self.invitations, invitation_code.clone());
-              let mut post = posts_map_store.get(&post_id).unwrap().clone();
-              post.photo_id = photo_id;
-              post.is_invited = true;
-              self.posts.insert(post_id, post);
-
-              return Ok(posts_map_store.get(&post_id).unwrap().clone());
-          }
-          None => {
-
-          },
-      }
-      return Err(PostError::PostNotFound);
-  }
-
   pub  fn link_by_invitation_code(&mut self, invitation_code:String) -> Result<Post, PostError> {
         let mut invitation_post_store = &self.invitations;
         let mut posts_map_store = &self.posts.clone();

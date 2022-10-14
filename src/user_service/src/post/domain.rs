@@ -10,7 +10,6 @@ pub type PostId = u64;
 #[derive(Debug, Clone, CandidType, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Post {
     pub id: u64,
-    pub photo_id: u64,
     pub timestamp: u64,
     pub user_self_id: String,
     pub user_other_id: String,
@@ -20,10 +19,9 @@ pub struct Post {
 }
 
 impl Post {
-    pub fn new(id: u64,photo_id: u64, timestamp: u64, user_self_id: String, user_other_id: String,user_other_name:String,text:String,is_invited:bool) -> Self {
+    pub fn new(id: u64, timestamp: u64, user_self_id: String, user_other_id: String,user_other_name:String,text:String,is_invited:bool) -> Self {
         Self {
             id,
-            photo_id,
             timestamp,
             user_self_id,
             user_other_id,
@@ -42,8 +40,8 @@ pub struct PostCreateCommand {
 }
 
 impl PostCreateCommand {
-    pub fn build_profile(self, id: u64,photo_id: u64, timestamp: u64, user_self_id: String,is_invited:bool, user_other_id: String,user_other_name:String,text:String) -> Post {
-        Post::new(id, photo_id,timestamp,user_self_id,user_other_id,user_other_name,text,is_invited)
+    pub fn build_profile(self, id: u64, timestamp: u64, user_self_id: String,is_invited:bool, user_other_id: String,user_other_name:String,text:String) -> Post {
+        Post::new(id, timestamp,user_self_id,user_other_id,user_other_name,text,is_invited)
     }
 
 }

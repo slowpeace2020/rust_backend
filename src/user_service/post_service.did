@@ -1,7 +1,6 @@
 type Post = record {
     "id": nat64;
     "timestamp": nat64;
-    "photo_id": nat64;
     "user_self_id": text;
     "user_other_id": text;
     "user_other_name": text;
@@ -65,6 +64,5 @@ service : {
     "query_posts" : (PostPageQuery) -> (PostPageResult);
     "getInvitationCode": (PostCreateCommand) -> (GetInvitationCodeResult);
     "linkByInvitationCode": (invitation_code: text) -> (LinkInvitationResult);
-    "updatePhoto": (post_id: nat64, photo_id: nat64) -> (LinkInvitationResult);
     "greet": (text) -> (text) query;
 }

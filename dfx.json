@@ -9,6 +9,10 @@
       "candid": "src/post_service/post_service.did",
       "package": "post_service",
       "type": "rust"
+    },
+    "photo": {
+      "main": "src/photo/Main.mo",
+      "type": "motoko"
     }
   },
   "defaults": {
